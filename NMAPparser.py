@@ -1,47 +1,32 @@
-#/usr/bin/python
+#/usr/bin/env python
 '''
-This program rips thru text dumps of NMAP text output and puts it into a pickled datafile for PythonPandas analysis
+This program runs NMAP outputs to XML and parses out the IP Address and open ports as objects
 '''
 
-import re
-import cPickle as pickle
-import datetime
+#import re
+#import cPickle as pickle
+#import datetime
+import xml.etree.ElementTree as ET
+from commands import getoutput
+#import re, urllib2, webbrowser
+#import json as simplejson
 
-data = ! cat *
-newDict = {}
-newList = []
-splitLine = ['0.0.0.0','0.0.0.0']
-pattern = re.compile('[0-9]{1,5}/tcp')
-nowTime = datetime.datetime.now().strftime('%Y-%m-%d')
+def get_nmap_output_in_xml_object():
+    command_line = 'nmap -T4 -A -p 1-1000 -oX -  localhost'
+    nmap_xml_object = ET.fromstring(getoutput(command_line))    
+    
+    return nmap_xml_object
 
-for line in data:
-	if 'Nmap scan report for ' in line:
-		cutLine = line[21:]
-		splitLine = cutLine.split(' ')
-		if len(splitLine) == 1:
-			splitLine.insert(1, splitLine[0])
-		if len(splitLine) == 2:
-			asdf = splitLine[1].lstrip('(')
-			asdf = asdf.rstrip(')')
-		splitLine.insert(1, asdf)
-		splitLine.pop()
+def parse_nmap_xml(nmap_object):
+    level_1 = nmap_object.getchildren()
+    host_info = level_1[3][1].attrib
+    target = host_info['addr']
+    
+    ports_info = level_1[3][3][1].attrib
+    open_ports = ports_info['portid']
+    
+    return target, open_ports
 
-	match = pattern.search(line)
-	if match: # looking for listings of open ports
-		newList.append(match.group())
-
-	if len(line) == 0: # this is the end scan object and creates a DICT with all the objects
-		newDict [splitLine[0]]=[splitLine[1],newList]
-		newList = []
-
-# saving pickled file to disk
-pickle.dump( newDict, open( "saveNewDict."+nowTime, "wb", True ) )
-
-#printing output
-for key, value in newDict.items():
-        a,b = value
-        if len(b) > 0:
-        	print
-        	print key, a,
-        	for item in b:
-        		print item,
+#import pdb; pdb.set_trace()
+nmap_object = get_nmap_output_in_xml_object()
+print parse_nmap_xml(nmap_object)
