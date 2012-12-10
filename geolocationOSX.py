@@ -58,3 +58,4 @@ print "[+] Google Map"
 print "http://maps.google.com/maps?q="+str(output["location"]["latitude"])+","+str(output["location"]["longitude"])
 googleMapWebpage = "http://maps.google.com/maps?q="+str(output["location"]["latitude"])+","+str(output["location"]["longitude"])
 webbrowser.open(googleMapWebpage)
+
