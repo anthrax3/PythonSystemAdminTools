@@ -19,6 +19,14 @@ print "[+] Scanning network"
 neighborWiFi = getoutput(path2WiFi)
 neighborWiFi = neighborWiFi.split('\n')
 
+# cleaning up bad data  
+for line in neighborWiFi:
+    a = re.compile(macMatch).search(line)
+    if a:
+        count +=1
+    else:
+        neighborWiFi.pop(count)
+
 print "[+] Creating HTML request"
 test = { "macAddress": "01:23:45:67:89:AB", "signalStrength": -65 }
 locationRequest={
@@ -38,11 +46,11 @@ for x in neighborWiFi:
 
 print "[+] Sending the request to Google"
 data = simplejson.JSONEncoder().encode(locationRequest)
-print repr(data)
+#print repr(data)
 url_request = urllib2.urlopen(query, data)
-print url_request
+#print url_request
 output = simplejson.loads(urllib2.urlopen(query, data).read())
-print repr(output)
+#print repr(output)
 
 # prints out the latitude and longitute data returned from Google and opens browser to visually location MAC
 print "[+] Google Map"
