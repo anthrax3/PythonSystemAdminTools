@@ -46,11 +46,8 @@ for x in neighborWiFi:
 
 print "[+] Sending the request to Google"
 data = simplejson.JSONEncoder().encode(locationRequest)
-#print repr(data)
 response = urllib2.urlopen(query, data).read()
-#print url_request
 output = simplejson.loads(response)
-#   print repr(output)
 
 # prints out the latitude and longitute data returned from Google and opens browser to visually location MAC
 print "[+] Google Map"
